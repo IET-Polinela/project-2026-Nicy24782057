@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contacts</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
+    .top { background: #fff; border-bottom: 1px solid #e7e7e7; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 16px 18px; }
+    nav a { text-decoration: none; color: #111; margin-right: 12px; }
+    nav a:hover { text-decoration: underline; }
+
+    .card { max-width: 760px; margin: 26px auto; background: #fff; border: 1px solid #e7e7e7; border-radius: 16px; overflow:hidden; }
+    .banner { height: 84px; background: linear-gradient(135deg, #111 0%, #444 100%); }
+    .content { padding: 18px; padding-top: 34px; }
+
+    /* FIX utama: avatar tidak ikut ngangkat header ke atas, dan teks tidak ketiban */
+    .row { display:flex; gap: 16px; align-items:flex-start; flex-wrap:wrap; margin-top: 0; }
+    .avatar {
+      width: 120px; height: 120px; border-radius: 16px;
+      border: 4px solid #fff; background:#f0f0f0;
+      display:flex; align-items:center; justify-content:center;
+      flex: 0 0 120px;   /* penting: biar ukuran avatar tetap */
+    }
+    .info { flex: 1; min-width: 260px; } /* penting: biar nama tidak kepotong */
+    h1 { margin: 4px 0 6px; font-size: 22px; }
+    .sub { margin: 0; color:#555; }
+    .badge { display:inline-block; padding:6px 10px; border:1px solid #e7e7e7; border-radius:999px; background:#fafafa; margin-right:6px; margin-top:8px; font-size:13px; }
+
+    pre {
+      margin: 0;
+      font-family: "Courier New", monospace;
+      font-size: 9px;
+      line-height: 9px;
+      color: #111;
+      user-select: none;
+    }
+
+    table { width:100%; border-collapse: collapse; margin-top: 14px; }
+    td { padding: 10px 8px; border-top: 1px solid #eee; }
+    td:first-child { width: 210px; color:#666; }
+
+    .footer { padding: 12px 18px; border-top:1px solid #eee; color:#666; font-size:12px; text-align:center; }
+  </style>
+</head>
+<body>
+
+  <div class="top">
+    <div class="wrap">
+      <nav>
+        <a href="/">Home</a>
+        <a href="/about/">About</a>
+        <a href="/contacts/">Contacts</a>
+      </nav>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="banner"></div>
+
+    <div class="content">
+      <div class="row">
+        <!-- AVATAR: kucing pixel hitam putih -->
+        <div class="avatar" aria-label="avatar kucing">
+<pre>
+  /\_/\  
+ ( o.o ) 
+  > ^ <
+</pre>
+        </div>
+
+        <div class="info">
+          <h1>Nicy Putra Pratama</h1>
+          <p class="sub">Prodi <b>TRI</b> • Jurusan <b>TI</b> • NPM <b>24782057</b></p>
+          <span class="badge">Laki-laki</span>
+          <span class="badge">Hobi: Main FF</span>
+        </div>
+      </div>
+
+      <table>
+        <tr><td>Nama</td><td>Nicy Putra Pratama</td></tr>
+        <tr><td>Program Studi</td><td>TRI</td></tr>
+        <tr><td>Jurusan</td><td>TI</td></tr>
+        <tr><td>NPM</td><td>24782057</td></tr>
+        <tr><td>Jenis Kelamin</td><td>Laki-laki</td></tr>
+        <tr><td>Hobi</td><td>Main Free Fire</td></tr>
+      </table>
+    </div>
+
+    <div class="footer">Contacts</div>
+  </div>
+
+</body>
+</html>
