@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Daftar Laporan</title>
+</head>
+<body>
+    <h1>Daftar Laporan Smart City</h1>
+    <a href="{% url 'add_report' %}">Tambah Laporan</a>
+    <hr>
+
+    {% for report in reports %}
+        <div>
+            <h3>{{ report.title }}</h3>
+            <p>Kategori: {{ report.category }}</p>
+            <p>Deskripsi: {{ report.description }}</p>
+            <p>Lokasi: {{ report.location }}</p>
+            <p>Status: {{ report.status }}</p>
+            <p>Dibuat: {{ report.created_at }}</p>
+
+            <a href="{% url 'edit_report' report.id %}">Edit</a>
+            <a href="{% url 'delete_report' report.id %}">Delete</a>
+        </div>
+        <hr>
+    {% empty %}
+        <p>Belum ada laporan.</p>
+    {% endfor %}
+</body>
+</html>
