@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Detail Laporan Kota Bandar Lampung</title>
+</head>
+<body>
+    <h1>Detail Laporan Kota Bandar Lampung</h1>
+
+    <h2>{{ report.title }}</h2>
+    <p><strong>Kategori:</strong> {{ report.category }}</p>
+    <p><strong>Deskripsi:</strong> {{ report.description }}</p>
+    <p><strong>Lokasi:</strong> {{ report.location }}</p>
+    <p><strong>Status:</strong> {{ report.get_status_display }}</p>
+    <p><strong>Dibuat:</strong> {{ report.created_at }}</p>
+
+    <hr>
+
+    {% if report.status == 'REPORTED' %}
+        <form method="post" action="{% url 'update_status' report.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="VERIFIED">
+            <button type="submit">Ubah ke Verified</button>
+        </form>
+    {% elif report.status == 'VERIFIED' %}
+        <form method="post" action="{% url 'update_status' report.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="IN_PROGRESS">
+            <button type="submit">Ubah ke In Progress</button>
+        </form>
+    {% elif report.status == 'IN_PROGRESS' %}
+        <form method="post" action="{% url 'update_status' report.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="status" value="RESOLVED">
+            <button type="submit">Ubah ke Resolved</button>
+        </form>
+    {% else %}
+        <p><strong>Status akhir: Resolved.</strong></p>
+    {% endif %}
+
+    <br>
+    <a href="{% url 'report_list' %}">Kembali ke Daftar Laporan</a>
+</body>
+</html>

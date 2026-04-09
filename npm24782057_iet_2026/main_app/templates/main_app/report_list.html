@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Daftar Laporan</title>
+    <title>Daftar Laporan Kota Bandar Lampung</title>
 </head>
 <body>
-    <h1>Daftar Laporan Smart City</h1>
+    <h1>Daftar Laporan Smart City Kota Bandar Lampung</h1>
     <a href="{% url 'add_report' %}">Tambah Laporan</a>
     <hr>
 
@@ -12,13 +12,36 @@
         <div>
             <h3>{{ report.title }}</h3>
             <p>Kategori: {{ report.category }}</p>
-            <p>Deskripsi: {{ report.description }}</p>
             <p>Lokasi: {{ report.location }}</p>
-            <p>Status: {{ report.status }}</p>
-            <p>Dibuat: {{ report.created_at }}</p>
+            <p>Status: {{ report.get_status_display }}</p>
 
-            <a href="{% url 'edit_report' report.id %}">Edit</a>
+            <a href="{% url 'report_detail' report.id %}">Detail</a> |
+            <a href="{% url 'edit_report' report.id %}">Edit</a> |
             <a href="{% url 'delete_report' report.id %}">Delete</a>
+
+            <br><br>
+
+            {% if report.status == 'REPORTED' %}
+                <form method="post" action="{% url 'update_status' report.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="VERIFIED">
+                    <button type="submit">Ubah ke Verified</button>
+                </form>
+            {% elif report.status == 'VERIFIED' %}
+                <form method="post" action="{% url 'update_status' report.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="IN_PROGRESS">
+                    <button type="submit">Ubah ke In Progress</button>
+                </form>
+            {% elif report.status == 'IN_PROGRESS' %}
+                <form method="post" action="{% url 'update_status' report.id %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="RESOLVED">
+                    <button type="submit">Ubah ke Resolved</button>
+                </form>
+            {% else %}
+                <p><strong>Laporan sudah selesai.</strong></p>
+            {% endif %}
         </div>
         <hr>
     {% empty %}
