@@ -1,67 +1,25 @@
-<!doctype html>
-<html lang="id">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Smart City Issue Reporting - Bandar Lampung</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 0; background: #f4f6f8; }
-    .top { background: #fff; border-bottom: 1px solid #e7e7e7; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 16px 18px; }
-    nav a { text-decoration: none; color: #111; margin-right: 12px; }
-    nav a:hover { text-decoration: underline; }
+{% extends 'base.html' %}
 
-    .card {
-      max-width: 760px; margin: 26px auto; background: #fff;
-      border: 1px solid #e7e7e7; border-radius: 16px; overflow: hidden;
-    }
-    .hero {
-      padding: 26px 18px;
-      background: linear-gradient(135deg, #111 0%, #444 100%);
-      color: #fff;
-      text-align: center;
-    }
-    .hero h1 { margin: 0; font-size: 28px; }
-    .hero p { margin: 10px 0 0; color: #eaeaea; }
+{% block title %}Home{% endblock %}
 
-    .content { padding: 18px; text-align: center; }
-    .btns a{
-      display:inline-block; margin: 8px 6px; padding: 10px 14px;
-      border: 1px solid #e7e7e7; border-radius: 12px; background: #fafafa;
-      color:#111; text-decoration:none;
-    }
-    .btns a:hover{ background:#f0f0f0; }
-    .footer { padding: 12px 18px; border-top: 1px solid #eee; color:#666; font-size: 12px; text-align:center; }
-  </style>
-</head>
-<body>
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Home</li>
+    </ol>
+</nav>
 
-  <div class="top">
-    <div class="wrap">
-      <nav>
-        <a href="/">Home</a>
-        <a href="/about/">About</a>
-        <a href="/contacts/">Contacts</a>
-      </nav>
+<div class="card">
+    <div class="card-body text-center py-5">
+        <h1 class="page-title mb-3">Selamat Datang di Smart City Kota Bandar Lampung</h1>
+        <p class="text-muted mb-4">
+            Aplikasi ini digunakan untuk melihat dan mengelola laporan permasalahan kota
+            seperti jalan rusak, sampah, gangguan internet, dan fasilitas umum lainnya.
+        </p>
+
+        <a href="{% url 'report_list' %}" class="btn btn-primary">
+            <i class="bi bi-table"></i> Lihat Daftar Laporan
+        </a>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="hero">
-      <h1>Selamat Datang di Smart City Issue Reporting Kota Bandar Lampung</h1>
-      <p>Aplikasi pelaporan masalah kota berbasis web.</p>
-    </div>
-
-    <div class="content">
-      <p>Silakan pilih menu berikut untuk melihat halaman lainnya.</p>
-      <div class="btns">
-        <a href="/about/">Buka About</a>
-        <a href="/contacts/">Buka Contacts</a>
-      </div>
-    </div>
-
-    <div class="footer">Smart City Issue Reporting • Bandar Lampung • 2026</div>
-  </div>
-
-</body>
-</html>
+</div>
+{% endblock %}
