@@ -55,6 +55,9 @@
                     <a class="nav-link" href="{% url 'report_list' %}">Reports</a>
                 </li>
                 <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link" href="/about/">About</a>
                 </li>
                 <li class="nav-item">
@@ -107,7 +110,10 @@
         button.disabled = true;
         button.dataset.originalText = button.innerHTML;
         button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + loadingText;
-        button.form.submit();
+
+        setTimeout(function () {
+            button.form.submit();
+        }, 1500);
     }
 
     function confirmStatusChange(message) {

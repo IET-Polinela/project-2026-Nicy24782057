@@ -3,6 +3,8 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import TemplateView, ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.http import JsonResponse
+from django.db.models import Q
 
 from .models import Report
 from .forms import ReportForm
@@ -88,3 +90,46 @@ class ReportUpdateStatusView(AdminRequiredMixin, View):
             messages.error(request, 'Perubahan status tidak valid.')
 
         return redirect('report_list')
+
+
+def live_search_reports(request):
+    keyword = request.GET.get('q', '').strip()
+
+    reports = Report.objects.all().order_by('-created_at')
+
+    if keyword:
+        reports = reports.filter(
+            Q(title__icontains=keyword) |
+            Q(category__icontains=keyword) |
+            Q(location__icontains=keyword) |
+            Q(status__icontains=keyword)
+        )
+
+    data = []
+    for report in reports:
+        data.append({
+            'id': report.id,
+            'title': report.title,
+            'category': report.category,
+            'location': report.location,
+            'status': report.status,
+        })
+
+    return JsonResponse({'reports': data})
+
+
+def report_detail_modal_api(request, pk):
+    try:
+        report = Report.objects.get(pk=pk)
+        data = {
+            'id': report.id,
+            'title': report.title,
+            'category': report.category,
+            'description': report.description,
+            'location': report.location,
+            'status': report.status,
+            'created_at': report.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+        }
+        return JsonResponse(data)
+    except Report.DoesNotExist:
+        return JsonResponse({'error': 'Report tidak ditemukan'}, status=404)
