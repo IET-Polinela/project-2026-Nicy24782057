@@ -133,3 +133,4 @@ def report_detail_modal_api(request, pk):
         return JsonResponse(data)
     except Report.DoesNotExist:
         return JsonResponse({'error': 'Report tidak ditemukan'}, status=404)
+
