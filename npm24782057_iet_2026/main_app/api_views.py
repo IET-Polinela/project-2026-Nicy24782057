@@ -1,20 +1,27 @@
 from django.db.models import Q
 from rest_framework import viewsets, permissions
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Report
 from .serializers import ReportSerializer
 from .permissions import IsCitizen, IsOwnerAndDraftOrReadOnly
 
 
 class ReportViewSet(viewsets.ModelViewSet):
+    authentication_classes = [JWTAuthentication]
     serializer_class = ReportSerializer
 
     def get_queryset(self):
-        if getattr(self.request.user, 'is_admin', False):
-            return Report.objects.exclude(status='DRAFT')
+        user = self.request.user
+
+        if not user.is_authenticated:
+            return Report.objects.none()
+
+        if getattr(user, 'is_admin', False):
+            return Report.objects.exclude(status='DRAFT').order_by('-created_at')
 
         return Report.objects.filter(
-            ~Q(status='DRAFT') | Q(status='DRAFT', reporter=self.request.user)
-        )
+            ~Q(status='DRAFT') | Q(status='DRAFT', reporter=user)
+        ).order_by('-created_at')
 
     def get_permissions(self):
         if self.action == 'create':

@@ -13,7 +13,7 @@
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="page-title mb-0">Daftar Laporan Kota Bandar Lampung</h2>
 
-    {% if user.is_authenticated and user.is_admin %}
+    {% if user.is_authenticated and not user.is_admin %}
         <a href="{% url 'add_report' %}" class="btn btn-primary">
             <i class="bi bi-plus-circle"></i> Tambah Laporan
         </a>
@@ -42,7 +42,7 @@
                         <th>Kategori</th>
                         <th>Lokasi</th>
                         <th>Status</th>
-                        <th style="width: 340px;">Aksi</th>
+                        <th style="width: 420px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="reportTableBody">
@@ -52,7 +52,9 @@
                             <td>{{ report.category }}</td>
                             <td>{{ report.location }}</td>
                             <td>
-                                {% if report.status == 'REPORTED' %}
+                                {% if report.status == 'DRAFT' %}
+                                    <span class="badge bg-dark">Draft</span>
+                                {% elif report.status == 'REPORTED' %}
                                     <span class="badge bg-secondary">Reported</span>
                                 {% elif report.status == 'VERIFIED' %}
                                     <span class="badge bg-primary">Verified</span>
@@ -67,14 +69,21 @@
                                     Detail
                                 </button>
 
-                                {% if user.is_authenticated and user.is_admin %}
+                                {% if user.is_authenticated and report.reporter == user and report.status == 'DRAFT' %}
                                     <a href="{% url 'edit_report' report.id %}" class="btn btn-sm btn-warning text-dark">
                                         Edit
                                     </a>
                                     <a href="{% url 'delete_report' report.id %}" class="btn btn-sm btn-danger">
                                         Hapus
                                     </a>
+                                    <form method="post" action="{% url 'submit_report' report.id %}" class="d-inline"
+                                          onsubmit="return confirmStatusChange('Kirim laporan ini ke admin? Setelah dikirim, laporan tidak bisa diedit atau dihapus.');">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-success">Kirim</button>
+                                    </form>
+                                {% endif %}
 
+                                {% if user.is_authenticated and user.is_admin %}
                                     {% if report.status == 'REPORTED' %}
                                         <form method="post" action="{% url 'update_status' report.id %}" class="d-inline"
                                               onsubmit="return confirmStatusChange('Ubah status laporan menjadi Verified?');">
@@ -139,7 +148,9 @@ document.addEventListener('DOMContentLoaded', function () {
     let debounceTimer;
 
     function renderStatusBadge(status) {
-        if (status === 'REPORTED') {
+        if (status === 'DRAFT') {
+            return '<span class="badge bg-dark">Draft</span>';
+        } else if (status === 'REPORTED') {
             return '<span class="badge bg-secondary">Reported</span>';
         } else if (status === 'VERIFIED') {
             return '<span class="badge bg-primary">Verified</span>';
@@ -149,6 +160,43 @@ document.addEventListener('DOMContentLoaded', function () {
             return '<span class="badge bg-success">Resolved</span>';
         }
         return status;
+    }
+
+    function renderStatusAction(report) {
+        if (!report.can_update_status) {
+            return '';
+        }
+
+        if (report.status === 'REPORTED') {
+            return `
+                <form method="post" action="/update-status/${report.id}/" class="d-inline"
+                      onsubmit="return confirmStatusChange('Ubah status laporan menjadi Verified?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="VERIFIED">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">Verifikasi</button>
+                </form>
+            `;
+        } else if (report.status === 'VERIFIED') {
+            return `
+                <form method="post" action="/update-status/${report.id}/" class="d-inline"
+                      onsubmit="return confirmStatusChange('Ubah status laporan menjadi In Progress?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="IN_PROGRESS">
+                    <button type="submit" class="btn btn-sm btn-outline-warning">Proses</button>
+                </form>
+            `;
+        } else if (report.status === 'IN_PROGRESS') {
+            return `
+                <form method="post" action="/update-status/${report.id}/" class="d-inline"
+                      onsubmit="return confirmStatusChange('Ubah status laporan menjadi Resolved?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="RESOLVED">
+                    <button type="submit" class="btn btn-sm btn-outline-success">Selesaikan</button>
+                </form>
+            `;
+        }
+
+        return '';
     }
 
     function renderReports(reports) {
@@ -161,19 +209,51 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        tableBody.innerHTML = reports.map(report => `
-            <tr>
-                <td>${report.title}</td>
-                <td>${report.category}</td>
-                <td>${report.location}</td>
-                <td>${renderStatusBadge(report.status)}</td>
-                <td>
-                    <button class="btn btn-sm btn-info text-white detail-btn" data-id="${report.id}">
-                        Detail
-                    </button>
-                </td>
-            </tr>
-        `).join('');
+        tableBody.innerHTML = reports.map(report => {
+            let actions = `
+                <button class="btn btn-sm btn-info text-white detail-btn" data-id="${report.id}">
+                    Detail
+                </button>
+            `;
+
+            if (report.can_edit) {
+                actions += `
+                    <a href="/edit/${report.id}/" class="btn btn-sm btn-warning text-dark">
+                        Edit
+                    </a>
+                `;
+            }
+
+            if (report.can_delete) {
+                actions += `
+                    <a href="/delete/${report.id}/" class="btn btn-sm btn-danger">
+                        Hapus
+                    </a>
+                `;
+            }
+
+            if (report.can_submit) {
+                actions += `
+                    <form method="post" action="/submit/${report.id}/" class="d-inline"
+                          onsubmit="return confirmStatusChange('Kirim laporan ini ke admin? Setelah dikirim, laporan tidak bisa diedit atau dihapus.');">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success">Kirim</button>
+                    </form>
+                `;
+            }
+
+            actions += renderStatusAction(report);
+
+            return `
+                <tr>
+                    <td>${report.title}</td>
+                    <td>${report.category}</td>
+                    <td>${report.location}</td>
+                    <td>${renderStatusBadge(report.status)}</td>
+                    <td>${actions}</td>
+                </tr>
+            `;
+        }).join('');
     }
 
     searchInput.addEventListener('input', function () {
@@ -212,7 +292,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 document.getElementById('modalCreatedAt').textContent = data.created_at;
 
                 let statusBadge = '';
-                if (data.status === 'REPORTED') {
+                if (data.status === 'DRAFT') {
+                    statusBadge = '<span class="badge bg-dark">Draft</span>';
+                } else if (data.status === 'REPORTED') {
                     statusBadge = '<span class="badge bg-secondary">Reported</span>';
                 } else if (data.status === 'VERIFIED') {
                     statusBadge = '<span class="badge bg-primary">Verified</span>';
@@ -221,6 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 } else if (data.status === 'RESOLVED') {
                     statusBadge = '<span class="badge bg-success">Resolved</span>';
                 }
+
                 document.getElementById('modalStatus').innerHTML = statusBadge;
 
                 detailModal.show();

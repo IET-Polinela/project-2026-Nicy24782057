@@ -6,7 +6,11 @@ class IsCitizen(permissions.BasePermission):
         if not request.user.is_authenticated:
             return False
 
-        return getattr(request.user, 'is_member', not getattr(request.user, 'is_admin', False))
+        return getattr(
+            request.user,
+            'is_member',
+            not getattr(request.user, 'is_admin', False)
+        )
 
 
 class IsOwnerAndDraftOrReadOnly(permissions.BasePermission):
