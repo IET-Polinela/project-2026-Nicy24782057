@@ -37,11 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'usermanagement_24782057',
+
+    'rest_framework',
+
     'main_app',
-    'dashboard_24782057',
     'about',
     'contacts',
+    'dashboard_24782057',
+    'usermanagement_24782057',
 ]
 
 AUTH_USER_MODEL = 'usermanagement_24782057.CustomUser'
