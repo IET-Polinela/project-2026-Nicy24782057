@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}About{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">About</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="page-title mb-3">About</h2>
+        <p>Aplikasi ini adalah proyek latihan menggunakan <strong>Django</strong>, sebuah framework web berbasis Python.</p>
+        <p>Tujuan utamanya adalah memahami konsep <strong>routing URL</strong>, <strong>views</strong>, <strong>template HTML</strong>, serta pengembangan CRUD dan workflow pada aplikasi web.</p>
+
+        <div class="alert alert-info mt-3 mb-0">
+            Fitur utama: Home, About, Contacts, dan Smart City Issue Reporting.
+        </div>
+    </div>
+</div>
+{% endblock %}
