@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="page-title mb-4">Dashboard Statistik Laporan</h2>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Distribusi Status Laporan</h5>
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Distribusi Kategori Laporan</h5>
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">5 Laporan REPORTED Terbaru</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="reportedTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Judul</th>
+                                    <th>Kategori</th>
+                                    <th>Lokasi</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="text-center">Memuat data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">5 Laporan RESOLVED Terbaru</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover" id="resolvedTable">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Judul</th>
+                                    <th>Kategori</th>
+                                    <th>Lokasi</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" class="text-center">Memuat data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    fetch("{% url 'dashboard_stats_api' %}")
+        .then(response => response.json())
+        .then(data => {
+            console.log('Dashboard JSON:', data);
+
+            const statusLabels = data.status_distribution.map(item => item.status);
+            const statusTotals = data.status_distribution.map(item => item.total);
+
+            const categoryLabels = data.category_distribution.map(item => item.category);
+            const categoryTotals = data.category_distribution.map(item => item.total);
+
+            const statusCtx = document.getElementById('statusChart').getContext('2d');
+            new Chart(statusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: statusLabels,
+                    datasets: [{
+                        label: 'Jumlah Status',
+                        data: statusTotals
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+
+            const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+            new Chart(categoryCtx, {
+                type: 'bar',
+                data: {
+                    labels: categoryLabels,
+                    datasets: [{
+                        label: 'Jumlah Kategori',
+                        data: categoryTotals
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true
+                }
+            });
+
+            const reportedBody = document.querySelector('#reportedTable tbody');
+            reportedBody.innerHTML = '';
+            data.latest_reported.forEach(report => {
+                reportedBody.innerHTML += `
+                    <tr>
+                        <td>${report.title}</td>
+                        <td>${report.category}</td>
+                        <td>${report.location}</td>
+                        <td><span class="badge bg-secondary">${report.status}</span></td>
+                    </tr>
+                `;
+            });
+
+            const resolvedBody = document.querySelector('#resolvedTable tbody');
+            resolvedBody.innerHTML = '';
+            data.latest_resolved.forEach(report => {
+                resolvedBody.innerHTML += `
+                    <tr>
+                        <td>${report.title}</td>
+                        <td>${report.category}</td>
+                        <td>${report.location}</td>
+                        <td><span class="badge bg-success">${report.status}</span></td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching dashboard data:', error);
+        });
+});
+</script>
+{% endblock %}

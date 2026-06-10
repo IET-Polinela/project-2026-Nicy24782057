@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Home</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-body text-center py-5">
+        <h1 class="page-title mb-3">Selamat Datang di Smart City Kota Bandar Lampung</h1>
+        <p class="text-muted mb-4">
+            Aplikasi ini digunakan untuk melihat dan mengelola laporan permasalahan kota
+            seperti jalan rusak, sampah, gangguan internet, dan fasilitas umum lainnya.
+        </p>
+
+        <a href="{% url 'report_list' %}" class="btn btn-primary">
+            <i class="bi bi-table"></i> Lihat Daftar Laporan
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Detail Laporan{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="{% url 'report_list' %}">Reports</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Detail</li>
+    </ol>
+</nav>
+
+<div class="card">
+    <div class="card-body">
+        <h2 class="page-title mb-3">{{ report.title }}</h2>
+
+        <div class="mb-2"><strong>Kategori:</strong> {{ report.category }}</div>
+        <div class="mb-2"><strong>Deskripsi:</strong> {{ report.description }}</div>
+        <div class="mb-2"><strong>Lokasi:</strong> {{ report.location }}</div>
+        <div class="mb-2">
+            <strong>Status:</strong>
+            {% if report.status == 'REPORTED' %}
+                <span class="badge bg-secondary">Reported</span>
+            {% elif report.status == 'VERIFIED' %}
+                <span class="badge bg-primary">Verified</span>
+            {% elif report.status == 'IN_PROGRESS' %}
+                <span class="badge bg-warning text-dark">In Progress</span>
+            {% elif report.status == 'RESOLVED' %}
+                <span class="badge bg-success">Resolved</span>
+            {% endif %}
+        </div>
+        <div class="mb-4"><strong>Dibuat:</strong> {{ report.created_at }}</div>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'report_list' %}" class="btn btn-secondary">Kembali</a>
+            <a href="{% url 'edit_report' report.id %}" class="btn btn-warning text-dark">Edit</a>
+            <a href="{% url 'delete_report' report.id %}" class="btn btn-danger">Hapus</a>
+
+            {% if report.status == 'REPORTED' %}
+                <form method="post" action="{% url 'update_status' report.id %}" class="d-inline"
+                      onsubmit="return confirmStatusChange('Ubah status laporan menjadi Verified?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="VERIFIED">
+                    <button type="submit" class="btn btn-outline-primary">Verifikasi</button>
+                </form>
+            {% elif report.status == 'VERIFIED' %}
+                <form method="post" action="{% url 'update_status' report.id %}" class="d-inline"
+                      onsubmit="return confirmStatusChange('Ubah status laporan menjadi In Progress?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="IN_PROGRESS">
+                    <button type="submit" class="btn btn-outline-warning">Proses</button>
+                </form>
+            {% elif report.status == 'IN_PROGRESS' %}
+                <form method="post" action="{% url 'update_status' report.id %}" class="d-inline"
+                      onsubmit="return confirmStatusChange('Ubah status laporan menjadi Resolved?');">
+                    {% csrf_token %}
+                    <input type="hidden" name="status" value="RESOLVED">
+                    <button type="submit" class="btn btn-outline-success">Selesaikan</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
