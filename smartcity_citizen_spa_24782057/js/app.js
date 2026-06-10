@@ -7,19 +7,36 @@ function renderNavbar() {
     const navMenu = document.getElementById("nav-menu");
     const token = localStorage.getItem("access_token");
 
+    if (!navMenu) {
+        return;
+    }
+
     if (token) {
         navMenu.innerHTML = `
+            <a href="#login" class="btn btn-light btn-sm me-2">
+                <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </a>
+
+            <a href="#register" class="btn btn-outline-light btn-sm me-2">
+                <i class="bi bi-person-plus me-1"></i>Register
+            </a>
+
             <a href="#dashboard" class="btn btn-outline-light btn-sm me-2">
                 <i class="bi bi-speedometer2 me-1"></i>Dashboard
             </a>
-            <button onclick="logout()" class="btn btn-light btn-sm">
+
+            <button type="button" class="btn btn-light btn-sm" onclick="logout()">
                 <i class="bi bi-box-arrow-right me-1"></i>Logout
             </button>
         `;
     } else {
         navMenu.innerHTML = `
-            <a href="#login" class="btn btn-light btn-sm">
+            <a href="#login" class="btn btn-light btn-sm me-2">
                 <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </a>
+
+            <a href="#register" class="btn btn-outline-light btn-sm">
+                <i class="bi bi-person-plus me-1"></i>Register
             </a>
         `;
     }
