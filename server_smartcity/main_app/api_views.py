@@ -1,4 +1,3 @@
-from django.db.models import Q
 from rest_framework import viewsets, permissions
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -21,25 +20,20 @@ class ReportViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        tab = self.request.query_params.get('tab')
+        tab = self.request.query_params.get("tab", "my_reports")
+
+        queryset = Report.objects.all().order_by("-updated_at")
 
         if not user.is_authenticated:
             return Report.objects.none()
 
-        queryset = Report.objects.all().order_by('-updated_at')
-
-        if tab == 'my_reports':
+        if tab == "my_reports":
             return queryset.filter(reporter=user)
 
-        if tab == 'feed':
-            return queryset.exclude(reporter=user).exclude(status='DRAFT')
+        if tab == "feed":
+            return queryset.exclude(reporter=user).exclude(status="DRAFT")
 
-        if getattr(user, 'is_admin', False):
-            return queryset.exclude(status='DRAFT')
-
-        return queryset.filter(
-            ~Q(status='DRAFT') | Q(status='DRAFT', reporter=user)
-        )
+        return queryset.filter(reporter=user)
 
     def get_permissions(self):
         if self.action == 'create':

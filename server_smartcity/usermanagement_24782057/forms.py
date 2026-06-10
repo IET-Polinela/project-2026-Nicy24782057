@@ -2,8 +2,9 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import CustomUser
 
+
 class CitizenRegisterForm(UserCreationForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=True, label="Email")
 
     class Meta:
         model = CustomUser
@@ -11,8 +12,11 @@ class CitizenRegisterForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super().save(commit=False)
+        user.email = self.cleaned_data.get('email')
         user.is_admin = False
         user.is_member = True
+
         if commit:
             user.save()
+
         return user

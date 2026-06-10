@@ -2,6 +2,8 @@ from django.contrib import messages
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
 
 from .forms import CitizenRegisterForm
 
@@ -26,6 +28,7 @@ class CustomLogoutView(LogoutView):
         return super().post(request, *args, **kwargs)
 
 
+@method_decorator(never_cache, name='dispatch')
 class RegisterView(CreateView):
     form_class = CitizenRegisterForm
     template_name = 'usermanagement_24782057/register.html'
