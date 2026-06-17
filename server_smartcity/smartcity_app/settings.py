@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'contacts',
     'dashboard_24782057',
     'usermanagement_24782057',
+    'drf_spectacular',
+    'django_scalar',
 ]
 
 AUTH_USER_MODEL = 'usermanagement_24782057.CustomUser'
@@ -66,6 +68,13 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'smartcity_app.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}
 
 TEMPLATES = [
     {
@@ -149,3 +158,14 @@ CORS_ALLOW_ALL_ORIGINS = True
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Smart City Portal API',
+    'DESCRIPTION': 'Dokumentasi REST API resmi untuk Portal Pelaporan Laporan Warga.',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
+
+SCALAR_OPENAPI_URL = '/api/schema/'
+SCALAR_TITLE = 'Smart City Portal API'
+SCALAR_THEME = 'dark'
